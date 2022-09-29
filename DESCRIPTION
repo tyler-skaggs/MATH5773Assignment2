@@ -1,0 +1,18 @@
+Package: MATH5773Skag0011Assign2
+Type: Package
+Title: MATH 5773: Assignment 2
+Version: 0.1.0
+Author: Tyler J. Skaggs
+Maintainer: Tyler J. Skaggs <tyler.j.skaggs-1@ou.edu>
+Description: Function and Computatiosn for Assignment 2 of MATH 5773.
+    The functions is designed to specifically work with BUBBLE2.xls data.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.2.1
+Depends: 
+    R (>= 2.10)
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
