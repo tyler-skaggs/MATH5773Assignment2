@@ -109,6 +109,6 @@ myboot <- function(df, model = "model1", iter = 1, alpha = 0.05){
 
   my_list <- list(beta_iters = as.data.frame(hbetas), CI_beta = CI,
                   beta_pts = beta, iter = iter, model = model, alpha = alpha)
-  return(invisible(my_list))
+  return(invisible(my_list)) 
 }
 ```
