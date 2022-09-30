@@ -34,30 +34,31 @@ myboot <- function(df, model = "model1", iter = 1, alpha = 0.05){
   n = 18
   k = 2
 
+  #Switch Statement to pick model
   mod_index <- switch (model,
-                       model1 = 4,
+                       model1 = 4, #column 4 is Diameter
 
-                       model2 = 5
+                       model2 = 5  #column 5 is Diensity
   )
 
-  ############# MAKING MATRICIES #############
+  ############## MAKING MATRICIES ##############
   X <- matrix(c(rep(1,n), df$MassFlux, df$HeatFlux), nrow = n, ncol = (k+1))
   Y <- as.matrix(df[mod_index])
 
   beta <- solve(t(X) %*% X) %*% (t(X) %*% Y)
   rownames(beta) <- c("(Intercept)", "MassFlux", "HeatFlux")
 
-  ############# CALCULATING STATISTICAL VALUES ############
+  ############## CALCULATING STATISTICAL VALUES ##############
   SSE <- ( t(Y) %*% Y ) - ( t(beta) %*% t(X) %*% Y)
-  s.squared <- SSE/(length(Y)-length(beta)) #SSE / df
+  s.squared <- SSE/(ln - (k+1)) #SSE / df
   C <- solve(t(X) %*% X)
 
-  C_ii <- c()
+  C_ii <- c() #C_ii is used to create confidence intervals
   for(i in 1:length(beta)){
     C_ii = c(C_ii, C[i,i])
   }
 
-  ############### CREATING CI ############
+  ############## CREATING CI ##############
   Lower <- beta - qt(1-alpha/2, n-(k+1)) * sqrt(c(s.squared) * C_ii)
   Upper <- beta + qt(1-alpha/2, n-(k+1)) * sqrt(c(s.squared) * C_ii)
 
@@ -67,10 +68,10 @@ myboot <- function(df, model = "model1", iter = 1, alpha = 0.05){
 
 
 
-  ############## SAMPLING SECTION ###############
+  ############## SAMPLING SECTION ##############
   hbetas <- matrix(NA, nrow = iter, ncol = 3)
   for(i in 1:iter){
-    index <- sample(1:18, 18, replace = TRUE)
+    index <- sample(1:18, 18, replace = TRUE) #random sample of 18 data pts
 
     X_samp <- matrix(c(rep(1,n), df[index,]$MassFlux, df[index,]$HeatFlux),
                      nrow = n, ncol = (k+1))
@@ -79,7 +80,7 @@ myboot <- function(df, model = "model1", iter = 1, alpha = 0.05){
     hbetas[i,] <- solve(t(X_samp) %*% X_samp) %*% (t(X_samp) %*% Y_samp)
   }
 
-  ############## PLOTTING AND RETURN ################
+  ############## PLOTTING AND RETURN ##############
   layout(matrix(1:3, nrow = 1,ncol = 3))
   hist(hbetas[,1],
        xlab = expression(widehat(beta)[0]),
