@@ -48,7 +48,7 @@ summary(ylm)
 ```
  
  
-### e. 
+### e.
 
 ## Task 5
 ```{r}
