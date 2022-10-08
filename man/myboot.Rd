@@ -16,7 +16,7 @@ myboot(df, model = "model1", iter = 1, alpha = 0.05)
 \item{alpha}{Alpha value to create a confidence interval}
 }
 \value{
-The funciton will make a histogram plot of each \eqn{\beta_i} from
+The function will make a histogram plot of each \eqn{\beta_i} from
    the sampling process. An invisible list will also be returned that contains
    the following:
    \itemize{

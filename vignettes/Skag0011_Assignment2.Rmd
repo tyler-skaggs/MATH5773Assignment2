@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(MATH5773Skag0011Assign2)
+library(Intro2MLR)
 v <- Intro2MLR::myreadxl("C:/Users/tyler/Documents/Grad School/MATH 5773/Data/Excel/")
 ```
 ## Task 1,2,3
@@ -49,7 +50,6 @@ The function that represents the change in force for every increase in weight wh
  
 ### d. 
 ```{r}
-v <- Intro2MLR::myreadxl("C:/Users/tyler/Documents/Grad School/MATH 5773/Data/Excel/")
 DMlm <- lm(FORCE ~ SPEED + RATE + PCTWT + (SPEED * RATE) + (SPEED * PCTWT) + (RATE * PCTWT), data = v$DRILLMETAL)
 summary(DMlm)
 ```

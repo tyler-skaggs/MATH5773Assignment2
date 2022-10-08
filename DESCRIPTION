@@ -14,5 +14,6 @@ Depends:
     R (>= 2.10)
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    Intro2MLR
 VignetteBuilder: knitr
