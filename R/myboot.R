@@ -38,7 +38,7 @@ myboot <- function(df, model = "model1", iter = 1, alpha = 0.05){
   mod_index <- switch (model,
                        model1 = 4, #column 4 is Diameter
 
-                       model2 = 5  #column 5 is Diensity
+                       model2 = 5  #column 5 is Density
   )
 
   ############## MAKING MATRICIES ##############
@@ -50,7 +50,7 @@ myboot <- function(df, model = "model1", iter = 1, alpha = 0.05){
 
   ############## CALCULATING STATISTICAL VALUES ##############
   SSE <- ( t(Y) %*% Y ) - ( t(beta) %*% t(X) %*% Y)
-  s.squared <- SSE/(ln - (k+1)) #SSE / df
+  s.squared <- SSE/(n - (k+1)) #SSE / df
   C <- solve(t(X) %*% X)
 
   C_ii <- c() #C_ii is used to create confidence intervals

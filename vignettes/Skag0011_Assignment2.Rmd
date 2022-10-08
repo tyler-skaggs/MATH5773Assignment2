@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(MATH5773Skag0011Assign2)
+v <- Intro2MLR::myreadxl("C:/Users/tyler/Documents/Grad School/MATH 5773/Data/Excel/")
 ```
 ## Task 1,2,3
 The code for the `myboot()` function is at the end.
@@ -27,52 +28,94 @@ str(m1)
 m2 <- myboot(df = bub, model = "model2", iter = 2000, alpha = 0.05)
 str(m2)
 ```
+The output of the functions is a graph and a named list. We have the `beta_iters` which are the estimates $\beta_0, \beta_1, \beta_2$ for each sample of 18 from the data set.
 
+The `CI_beta` is the confidence interval of the $\beta$ estimates from the full data, not from a sample. This is the interval in which we would expect $95\%$ of the data from the sampling to fall.
+
+The `beta_pts` are the point estimates of the $\beta$ values from the full data set. This what we would expect the mean of the $\beta$ iterations to fall around. This value is also listed at the top of the histograms.
 
 ## Task 4
-
 ### a.
-  $E(y) = \beta_0 + \beta_1x_{SPEED} + \beta_2x_{RATE} + \beta_3x_{PCTWT} + \beta_4x_{SPEED}x_{RATE} + \beta_5x_{SPEED}x_{PCTWT}+ \beta_6x_{RATE}x_{PCTWT}$
+  We can create the following model to estimate the thrust forces as a function of spindle speed, feed rate, and fraction weight, and all the interaction points.
+  $$E(y) = \beta_0 + \beta_1x_{SPEED} + \beta_2x_{RATE} + \beta_3x_{PCTWT} + \beta_4x_{SPEED}x_{RATE} + \beta_5x_{SPEED}x_{PCTWT}+ \beta_6x_{RATE}x_{PCTWT}$$
 
 ### b.
-  $\beta_3 + \beta_5*1000 + \beta_6*50$
+  The function that represents the change in force for every increase in weight when rate = 50 and speed = 1000 is as follows:
+  $$\beta_3 + \beta_5*1000 + \beta_6*50$$
  
 ### c.
+The function that represents the change in force for every increase in weight when rate = 150 and speed = 1000 is as follows:
   $\beta_3 + \beta_5*1000 + \beta_6*150$
  
 ### d. 
 ```{r}
 v <- Intro2MLR::myreadxl("C:/Users/tyler/Documents/Grad School/MATH 5773/Data/Excel/")
-ylm <- lm(FORCE ~ SPEED + RATE + PCTWT + (SPEED * RATE) + (SPEED * PCTWT) + (RATE * PCTWT), data = v$DRILLMETAL)
-summary(ylm)
+DMlm <- lm(FORCE ~ SPEED + RATE + PCTWT + (SPEED * RATE) + (SPEED * PCTWT) + (RATE * PCTWT), data = v$DRILLMETAL)
+summary(DMlm)
 ```
- 
- 
-### e.
+ The prediction equation is then:
+ $$E(y) = 341.1 + 0.01812x_{SPEED} + 1.988x_{RATE} + 9.375x_{PCTWT} + 0.0000125x_{SPEED}x_{RATE} +\\ 0.000375x_{SPEED}x_{PCTWT}+ 0.0125x_{RATE}x_{PCTWT}$$
+### e. 
+```{r}
+confint(DMlm)
+```
+
+  We should test $\beta_6$ the coefficient on the interaction between rate and percentage weight. Looking at the $p-value$ we get from the $t$-test is 0.232. We do not enough evidence to reject the null. So we conclude that this coefficient is likely to have a true value of $0$, this is further seen in the $95\%$ confidence interval generated above.
 
 ## Task 5
 ```{r}
-ylm <- lm(`Man-HRs` ~ Capacity + Pressure + Capacity*Pressure, data = v$BOILERS )
-summary(ylm)
-
-
-(-1.529 + .003439*750)
+Blm <- lm(`Man-HRs` ~ Capacity + Pressure + Capacity*Pressure, data = v$BOILERS )
+summary(Blm)
 ```
 
 ### a.
- Looking at the summary output we can see that the $F$-statistic
+ Looking at the summary output we can see that the $F$-test $p$-value is $3.4e-9$ which is much less than the value $\alpha = 0.05$. When it comes to testing the hypothesis 
+ $$H_0: \beta_1 = \beta_2 = \beta_3$$ With such a low $p$-value we have sufficient evidence to reject the null hypothesis and conclude that the model has some utility.
 
 ### b.
   Again from the summary output we see that the relationship between Capacity and Pressure contributes a positive slope of $\beta_3 = 3.439$. We see that the $p$-value for a one-tail test is $0.032662/2 = 0.0163$ with $\alpha = 0.05$. There is significant evidence supporting that the slope is nonzero (we reject the null).
  
 ### c.
+  We can estimate the change in man-hours for every 1-psi increase in pressure at capacity 750 with $y = -1.529 + 0.003439 * (750) = 1.05025$.
 
 
 ## Task 6
 
 ### a.
+```{r, out.width="100%", fig.width=8, fig.height = 6, fig.align='center'}
+plot(v$KWHRS$SIZE, v$KWHRS$USAGE)
+```
+
 
 ### b.
+```{r}
+KWlm <- lm(USAGE ~ SIZE + SIZESQ, data = v$KWHRS)
+summary(KWlm)
+```
+The equation we get is $y = -806.7 + 1.962x - 0.0003404x^2$.
+
+### c.
+```{r, out.width="100%", fig.width=8, fig.height = 6, fig.align='center'}
+betas <- KWlm$coefficients
+PredFn <- function(x) betas[1] + betas[2]*x + betas[3] * x^2
+plot(v$KWHRS$SIZE, v$KWHRS$USAGE)
+curve(PredFn, add = TRUE, col = "red", lwd = 2)
+```
+
+
+### d. 
+  The $\beta_0$ term in the model is where we would expect the electric usage of a house with a size of 0 square feet. We see that this value is -806. This interpretation is not useful as it falls outside the lowest value in our data, it is used to set up where the curve goes to match the data and is not to be read as where the data lies at $x = 0$ (as $x = 0$ does not makes sense in this model).
+  The $\beta_1 = 1.92$ does not have much utility in this model as the $x^2$ term has much more affect on the shape of the model.
+  The $\beta_2$ term decides the overall shape of the model. If it is negative we get a curve like the one above, if it is positive we get more of a bowl shape for the model. This term is what has the most effect on the shape of the model.
+
+### e.
+  The over all model seems useful. Looking at the summary output in part b, we see that on the $F$ test we calculate a $p$-value of $1.375e-10$ (much less than $0.01$. This gives us sufficient evidence to reject the null (that $\beta_1 = \beta_2 = 0$) and claim that this is a useful model (at least one of $\beta_1, \beta_2$ the coefficients is nonzero) with $\alpha = 0.01$.
+
+### f. 
+  We want to test the following hypotheses on $\beta_2$: 
+  $$H_0: \beta_2 = 0 \text{ and } H_a: \beta_2 < 0$$
+  From the summary output in part b, we conduct a $t$-test and gain a $p$-value of $1.9e-7$ on the SIZESQ term. This, however, is a two-sided test by default. So to test if $\beta_2 < 0$, the appropriate $p$-value is $1.9e-7 / 2 = 0.8e-7$. At $\alpha = 0.01$, this is sufficient evidence to reject the null and claim that there is a downward curvature in the population.
+  
 
 ## The `myboot()` Function
 ```{r}
@@ -97,7 +140,7 @@ myboot <- function(df, model = "model1", iter = 1, alpha = 0.05){
 
   ############## CALCULATING STATISTICAL VALUES ##############
   SSE <- ( t(Y) %*% Y ) - ( t(beta) %*% t(X) %*% Y)
-  s.squared <- SSE/(ln - (k+1)) #SSE / df
+  s.squared <- SSE/(n - (k+1)) #SSE / df
   C <- solve(t(X) %*% X)
 
   C_ii <- c() #C_ii is used to create confidence intervals
